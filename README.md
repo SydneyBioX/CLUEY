@@ -11,6 +11,8 @@ multi-modal single-cell data. CLUEY uses cell-type identity markers to
 guide the clustering process and performs recursive clusters to ensure
 that sub-populations are captured.
 
+<img src="man/figures/CLUEY_figure.png" width="50%" style="display: block; margin: auto;" />
+
 ## Dependencies
 
 CLUEY requires both keras and tensorflow, please have both installed.
@@ -61,18 +63,15 @@ data(exampleData)
 # Run CLUEY
 # If your logcounts matrix is in dgCMatrix format, then you'll need to convert it to a matrix using `as.matrix()`
 clustering_results <- runCLUEY(exprsMatRNA=as.matrix(logcounts(exampleData)), knowledgeBase=mcaFACS, kLimit=10, encodingDim1=10, encodingDim2=5)
-#> 25/25 - 0s - 115ms/epoch - 5ms/step
-#> 13/13 - 0s - 93ms/epoch - 7ms/step
-#> 4/4 - 0s - 80ms/epoch - 20ms/step
+#> 25/25 - 0s - 103ms/epoch - 4ms/step
 #> 9/9 - 0s - 87ms/epoch - 10ms/step
-#> 25/25 - 0s - 89ms/epoch - 4ms/step
-#> 12/12 - 0s - 102ms/epoch - 9ms/step
-#> 10/10 - 0s - 103ms/epoch - 10ms/step
-#> 10/10 - 0s - 91ms/epoch - 9ms/step
-#> 9/9 - 0s - 98ms/epoch - 11ms/step
-#> 2/2 - 0s - 89ms/epoch - 44ms/step
-#> 14/14 - 0s - 124ms/epoch - 9ms/step
-#> 13/13 - 0s - 115ms/epoch - 9ms/step
+#> 26/26 - 0s - 115ms/epoch - 4ms/step
+#> 12/12 - 0s - 90ms/epoch - 8ms/step
+#> 11/11 - 0s - 103ms/epoch - 9ms/step
+#> 15/15 - 0s - 99ms/epoch - 7ms/step
+#> 17/17 - 0s - 123ms/epoch - 7ms/step
+#> 5/5 - 0s - 102ms/epoch - 20ms/step
+#> 13/13 - 0s - 93ms/epoch - 7ms/step
 ```
 
 ## Viewing results
@@ -85,7 +84,7 @@ set.seed(3435)
 
 # View the optimal number of clusters predicted by CLUEY
 clustering_results$optimal_K
-#> [1] 7
+#> [1] 6
 
 # We can store the results in the metadata of our SingleCellExperiment object. 
 colData(exampleData) <- cbind(colData(exampleData), clustering_results$predictions)
@@ -100,4 +99,4 @@ umap$correlation <- exampleData$correlation
 ggplot(umap, aes(x=UMAP1, y=UMAP2, color=cluster)) + geom_point() + theme_classic()
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />

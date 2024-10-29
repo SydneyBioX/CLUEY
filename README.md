@@ -26,7 +26,7 @@ library(devtools)
 install_github("SydneyBioX/CLUEY")
 ```
 
-## Generating reference
+## Generating knowledge base
 
 You can generate your own knowledge base using the
 `generateKnowledgeBase` function like below:
@@ -61,13 +61,18 @@ data(exampleData)
 # Run CLUEY
 # If your logcounts matrix is in dgCMatrix format, then you'll need to convert it to a matrix using `as.matrix()`
 clustering_results <- runCLUEY(exprsMatRNA=as.matrix(logcounts(exampleData)), knowledgeBase=mcaFACS, kLimit=10, encodingDim1=10, encodingDim2=5)
-#> 25/25 - 0s - 104ms/epoch - 4ms/step
-#> 10/10 - 0s - 89ms/epoch - 9ms/step
+#> 25/25 - 0s - 115ms/epoch - 5ms/step
+#> 13/13 - 0s - 93ms/epoch - 7ms/step
+#> 4/4 - 0s - 80ms/epoch - 20ms/step
+#> 9/9 - 0s - 87ms/epoch - 10ms/step
+#> 25/25 - 0s - 89ms/epoch - 4ms/step
 #> 12/12 - 0s - 102ms/epoch - 9ms/step
-#> 13/13 - 0s - 100ms/epoch - 8ms/step
-#> 17/17 - 0s - 84ms/epoch - 5ms/step
-#> 4/4 - 0s - 88ms/epoch - 22ms/step
-#> 14/14 - 0s - 98ms/epoch - 7ms/step
+#> 10/10 - 0s - 103ms/epoch - 10ms/step
+#> 10/10 - 0s - 91ms/epoch - 9ms/step
+#> 9/9 - 0s - 98ms/epoch - 11ms/step
+#> 2/2 - 0s - 89ms/epoch - 44ms/step
+#> 14/14 - 0s - 124ms/epoch - 9ms/step
+#> 13/13 - 0s - 115ms/epoch - 9ms/step
 ```
 
 ## Viewing results
@@ -80,7 +85,7 @@ set.seed(3435)
 
 # View the optimal number of clusters predicted by CLUEY
 clustering_results$optimal_K
-#> [1] 5
+#> [1] 7
 
 # We can store the results in the metadata of our SingleCellExperiment object. 
 colData(exampleData) <- cbind(colData(exampleData), clustering_results$predictions)

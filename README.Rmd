@@ -31,7 +31,7 @@ library(devtools)
 install_github("SydneyBioX/CLUEY")
 ```
 
-## Generating reference
+## Generating knowledge base
 You can generate your own knowledge base using the `generateKnowledgeBase` function like below:
 ```{r, warning=FALSE, error=FALSE, message=FALSE, eval=FALSE}
 knowledgeBase <- generateKnowledgeBase(exprsMat=logcounts(sce), celltypes=sce$cellType)

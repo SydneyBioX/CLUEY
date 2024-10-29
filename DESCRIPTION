@@ -1,0 +1,26 @@
+Package: CLUEY
+Type: Package
+Title: CLUEY enables knowledge-guided clustering and cell type detection from single-cell omics data
+Version: 0.1.0
+Author: person("Daniel", "Kim", email = "daniel.kim2@sydney.edu.au",
+        role = c("aut", "cre"),
+        comment=c(ORCID="0000-0002-8405-6719"))
+        person("Carissa", "Chen", email = "carissa.chen@sydney.edu.au",
+        role = c("aut", "cre"),
+        comment=c(ORCID="0000-0002-9225-7086"))
+        person("Lijia", "Yu", email = "lijia.yu@sydney.edu.au",
+        role = c("aut", "cre"))
+        person("Jean", "Yang", email = "jean.yang@sydney.edu.au",
+        role = c("aut", "ths"),
+        comment=c(ORCID="0000-0002-5271-2603"))
+        person("Pengyi", "Yang", email = "pengyi.yang@sydney.edu.au",
+        role = c("aut", "ths"),
+        comment=c(ORCID="0000-0003-1098-3138"))
+Maintainer: Daniel Kim <daniel.kim2@sydney.edu.au>
+Description: Clustering is a fundamental task in single-cell omics data analysis and can significantly impact downstream analyses and biological interpretations. The standard approach relies on first grouping the cells based on their gene expression profiles before annotating each cluster to a cell type based on marker gene expression. However, the number of cell types detected by different clustering methods can vary substantially due to several factors, including the dimension reduction method used and the choice of parameters of the chosen clustering algorithm. Importantly, these discrepancies can lead to subjective interpretations in downstream steps, particularly in manual cell-type annotation. To this end, we propose CLUEY, a knowledge-guided framework for cell type detection and clustering of single-cell omics data. We apply CLUEY to both unimodal (scRNA-seq, scATAC-seq) and multimodal datasets (e.g. CITE-seq, SHARE-seq) and demonstrate that CLUEY provides much-needed guidance on clustering analyses of single-cell omics data.
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 2.10)
+Imports: tensorflow, keras, SingleCellExperiment, Cepo, Seurat, scran
+RoxygenNote: 7.3.2

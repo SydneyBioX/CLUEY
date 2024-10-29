@@ -2,7 +2,7 @@
 # Function called during recursive clustering stage
 ###################################################################
 
-reRunCLUEY <-  function(exprsMatRNA, exprsMatOther=exprsMatOther, reducedDims, reference, corMethod, kLimit, previousResult, propGenes, recursive, minCells,
+reRunCLUEY <-  function(exprsMatRNA, exprsMatOther=exprsMatOther, reducedDims, knowledgeBase, corMethod, kLimit, previousResult, propGenes, recursive, minCells,
                         encodingDim2=encodingDim2, unimodal=unimodal, hiddenDimsMultimodal=hiddenDimsMultimodal, nEpochs=nEpochs){
 
   if(ncol(exprsMatRNA) > minCells){
@@ -11,15 +11,15 @@ reRunCLUEY <-  function(exprsMatRNA, exprsMatOther=exprsMatOther, reducedDims, r
 
       if (unimodal) {
 
-        model <- modelGeneVar(exprsMatRNA)
-        hvg_genes <- getTopHVGs(model, n=0.025*nrow(exprsMatRNA))
+        model <- scran::modelGeneVar(exprsMatRNA)
+        hvg_genes <- scran::getTopHVGs(model, n=0.025*nrow(exprsMatRNA))
         hvg_data <- exprsMatRNA[hvg_genes, ]
 
         reducedDims <- getEncodingMultiModal(list(hvg_data), hiddenDims = 10, encodedDim = encodingDim2, epochs=nEpochs, batchSize = 16)
       } else if (!unimodal) {
 
-        model <- modelGeneVar(exprsMatRNA)
-        hvg_genes <- getTopHVGs(model, n=0.025*nrow(exprsMatRNA))
+        model <- scran::modelGeneVar(exprsMatRNA)
+        hvg_genes <- scran::getTopHVGs(model, n=0.025*nrow(exprsMatRNA))
         hvg_data <- exprsMatRNA[hvg_genes, ]
 
         reducedDims <- getEncodingMultiModal(list(hvg_data, exprsMatOther), hiddenDims = c(50, 10), encodedDim = encodingDim2, epochs=nEpochs, batchSize =16)
@@ -27,34 +27,34 @@ reRunCLUEY <-  function(exprsMatRNA, exprsMatOther=exprsMatOther, reducedDims, r
     }
 
     dist_matrix <- as.matrix(dist(reducedDims))
-    affinity_matrix <- affinityMatrix(dist_matrix, K = 20, sigma = 0.4)
+    affinity_matrix <- SNFtool::affinityMatrix(dist_matrix, K = 20, sigma = 0.4)
 
-    k_annotations <- list()
+    k_predictions <- list()
     k_clusters <- list()
 
     for(k in 2:kLimit){
       cluster_res <- spectralClustering(as.matrix(affinity_matrix),  k)
       clusters <- cluster_res$label
       k_clusters[[k-1]] <- clusters
-      k_annotations[[k-1]] <- annotateClusters(exprsMat = exprsMatRNA, clusters = clusters,
-                                               corMethod = corMethod, reference = reference, propGenes = propGenes)
+      k_predictions[[k-1]] <- annotateClusters(exprsMat = exprsMatRNA, clusters = clusters,
+                                               corMethod = corMethod, knowledgeBase = knowledgeBase, propGenes = propGenes)
 
     }
-    names(k_annotations) <- 2:kLimit
+    names(k_predictions) <- 2:kLimit
     names(k_clusters) <- 2:kLimit
-    optimal_annotations <- findOptimalK(k_annotations, k_clusters)
+    optimal_predictions <- findOptimalK(k_predictions, k_clusters)
 
     cluey_df <- data.frame(cell_id = colnames(exprsMatRNA),
-                           spectral_cluster = optimal_annotations$clusters,
-                           annotation = gsub("[.]", " ", optimal_annotations[[1]]$annotation[optimal_annotations$clusters]),
-                           correlation = optimal_annotations[[1]]$correlation[optimal_annotations$clusters])
+                           spectral_cluster = optimal_predictions$clusters,
+                           annotation = gsub("[.]", " ", optimal_predictions[[1]]$annotation[optimal_predictions$clusters]),
+                           correlation = optimal_predictions[[1]]$correlation[optimal_predictions$clusters])
 
     cluey_df$cluster <- as.integer(factor(cluey_df$annotation))
     max_cluster <- max(cluey_df$cluster)
-    score <- FisherZInv(mean(FisherZ(unique(cluey_df$correlation))))
-    pvalue <- pnorm(mean(FisherZ(unique(cluey_df$correlation))), lower.tail = F)
+    score <- DescTools::FisherZInv(mean(DescTools::FisherZ(unique(cluey_df$correlation))))
+    pvalue <- pnorm(mean(DescTools::FisherZ(unique(cluey_df$correlation))), lower.tail = F)
 
-    current_result <- list(optimal_K = max_cluster, score = round(optimal_annotations$score, digits = 2), annotations = cluey_df, pvalue = round(pvalue, digits = 2))
+    current_result <- list(optimal_K = max_cluster, score = round(optimal_predictions$score, digits = 2), predictions = cluey_df, pvalue = round(pvalue, digits = 2))
     tmp_current_result <- current_result
     results <- list()
 
@@ -66,7 +66,7 @@ reRunCLUEY <-  function(exprsMatRNA, exprsMatOther=exprsMatOther, reducedDims, r
           cells <- cluey_df$cell_id[idx]
 
           if(length(cells) > minCells){
-            tmp_current_result[["annotations"]] <- tmp_current_result$annotations[tmp_current_result$annotations$cell_id %in% cells,]
+            tmp_current_result[["predictions"]] <- tmp_current_result$predictions[tmp_current_result$predictions$cell_id %in% cells,]
 
             if (!unimodal) {
               tmp_exprsMatOther <- exprsMatOther[, cells]
@@ -75,7 +75,7 @@ reRunCLUEY <-  function(exprsMatRNA, exprsMatOther=exprsMatOther, reducedDims, r
             }
 
             tmp_results <- reRunCLUEY(exprsMatRNA = exprsMatRNA[, cells], exprsMatOther = tmp_exprsMatOther, reducedDims = reducedDims[cells,],
-                                      reference = reference, corMethod = corMethod, kLimit = kLimit,
+                                      knowledgeBase = knowledgeBase, corMethod = corMethod, kLimit = kLimit,
                                       previousResult = tmp_current_result, propGenes = propGenes, recursive = recursive, minCells = minCells,
                                       encodingDim2=encodingDim2, unimodal=unimodal, hiddenDimsMultimodal=hiddenDimsMultimodal, nEpochs=nEpochs)
 
@@ -88,22 +88,22 @@ reRunCLUEY <-  function(exprsMatRNA, exprsMatOther=exprsMatOther, reducedDims, r
 
       if(length(results) > 0){
 
-        cluey_df <- current_result$annotations
+        cluey_df <- current_result$predictions
         for(i in 1:length(results)){
           result <- results[[i]]
           if(!is.null(result)){
-            cells <- result$annotations$cell_id
+            cells <- result$predictions$cell_id
             cluey_df <- cluey_df[!(cluey_df$cell_id %in% cells),]
-            cluey_df <- rbind(cluey_df, results[[i]]$annotations)
+            cluey_df <- rbind(cluey_df, results[[i]]$predictions)
           }
 
         }
         cluey_df$cluster <- as.integer(factor(cluey_df$annotation))
         cluey_df <- cluey_df[match(colnames(exprsMatRNA), cluey_df$cell_id),]
 
-        score <- FisherZInv(mean(FisherZ(unique(cluey_df$correlation))))
-        pvalue <- pnorm(mean(FisherZ(unique(cluey_df$correlation))), lower.tail = F)
-        return(list(optimal_K = length(unique(cluey_df$annotation)), annotations = cluey_df, score = round(score, digits = 2), pvalue = round(pvalue, digits = 2)))
+        score <- DescTools::FisherZInv(mean(DescTools::FisherZ(unique(cluey_df$correlation))))
+        pvalue <- pnorm(mean(DescTools::FisherZ(unique(cluey_df$correlation))), lower.tail = F)
+        return(list(optimal_K = length(unique(cluey_df$annotation)), predictions = cluey_df, score = round(score, digits = 2), pvalue = round(pvalue, digits = 2)))
 
       }
 

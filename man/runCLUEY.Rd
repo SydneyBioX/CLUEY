@@ -7,7 +7,7 @@
 runCLUEY(
   exprsMatRNA,
   exprsMatOther = NULL,
-  reference,
+  knowledgeBase,
   corMethod = "spearman",
   propGenes = 0.25,
   kLimit = 20,
@@ -27,13 +27,13 @@ features and columns are cells.}
 \item{exprsMatOther}{A list of additional modalities, such as ATAC-seq or CITE-seq,
 where rows are the features and columns are cells.}
 
-\item{reference}{Reference generated from the function generateReference.}
+\item{knowledgeBase}{knowledgeBase generated from the function `generateKnowledgeBase`.}
 
 \item{corMethod}{Correlation method used when determining the most similar cell-types
 for each cluster. Options are "Spearman" or "Pearson". Default is Spearman correlation.}
 
 \item{propGenes}{Proportion of genes to use when calculating the correlation of the expression
-profiles between each cluster and reference cell-type. Default is 0.25.}
+profiles between each cluster and knowledgeBase cell-type. Default is 0.25.}
 
 \item{kLimit}{The maximum number of clusters to estimate. Default is 20.}
 

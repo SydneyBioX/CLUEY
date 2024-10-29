@@ -10,3 +10,21 @@
 #' }
 #' @source <https://pubmed.ncbi.nlm.nih.gov/30979687/>
 "exampleData"
+
+#' @title Mouse Cell Atlas: 10X
+#'
+#' @description Knowledge base for Mouse Cell Atlas 10X
+#'
+#' @format named list object
+#'
+#' @source <https://github.com/SydneyBioX/CLUEY>
+"mca10X"
+
+#' @title Mouse Cell Atlas: FACS
+#'
+#' @description Knowledge base for Mouse Cell Atlas FACS
+#'
+#' @format named list object
+#'
+#' @source <https://github.com/SydneyBioX/CLUEY>
+"mcaFACS"

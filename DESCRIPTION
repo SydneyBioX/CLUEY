@@ -22,5 +22,5 @@ License: GPL-2
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10)
-Imports: tensorflow, keras, SingleCellExperiment, Cepo, Seurat, scran
+Imports: tensorflow, keras, SingleCellExperiment, Cepo, Seurat, scran, magrittr, SNFtool
 RoxygenNote: 7.3.2

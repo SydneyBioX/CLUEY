@@ -7,11 +7,11 @@
 #' features and columns are cells.
 #' @param exprsMatOther A list of additional modalities, such as ATAC-seq or CITE-seq,
 #' where rows are the features and columns are cells.
-#' @param reference Reference generated from the function generateReference.
+#' @param knowledgeBase knowledgeBase generated from the function `generateKnowledgeBase`.
 #' @param corMethod Correlation method used when determining the most similar cell-types
 #' for each cluster. Options are "Spearman" or "Pearson". Default is Spearman correlation.
 #' @param propGenes Proportion of genes to use when calculating the correlation of the expression
-#' profiles between each cluster and reference cell-type. Default is 0.25.
+#' profiles between each cluster and knowledgeBase cell-type. Default is 0.25.
 #' @param kLimit The maximum number of clusters to estimate. Default is 20.
 #' @param subK The maximum number of clusters to estimate when performing iterative clustering. Default is 3.
 #' @param minCells The minimum number of cells that a cluster should contain. Default is 20 cells.
@@ -26,7 +26,7 @@
 #' and a dataframe containing statistics associated with optimal clustering:
 #' @export
 #'
-runCLUEY <-  function(exprsMatRNA, exprsMatOther=NULL, reference, corMethod = "spearman", propGenes=0.25, kLimit=20, subK=3, minCells=20,
+runCLUEY <-  function(exprsMatRNA, exprsMatOther=NULL, knowledgeBase, corMethod = "spearman", propGenes=0.25, kLimit=20, subK=3, minCells=20,
                       recursive=TRUE, encodingDim1=50, encodingDim2=10, hiddenDimsMultimodal=50, nEpochs=50){
   unimodal <- TRUE
   stopifnot(minCells >= 2*subK)
@@ -40,15 +40,15 @@ runCLUEY <-  function(exprsMatRNA, exprsMatOther=NULL, reference, corMethod = "s
   if (unimodal) {
 
     message("Selecting HVGs...\n")
-    model <- modelGeneVar(exprsMatRNA)
-    hvg_genes <- getTopHVGs(model, n=0.05*nrow(exprsMatRNA))
+    model <- scran::modelGeneVar(exprsMatRNA)
+    hvg_genes <- scran::getTopHVGs(model, n=0.05*nrow(exprsMatRNA))
     hvg_data <- exprsMatRNA[hvg_genes, ]
     message("Reducing dimensions...\n")
     reducedDims <- getEncodingMultiModal(list(hvg_data), hiddenDims = encodingDim1, encodedDim = encodingDim1, epochs=nEpochs, batchSize=32)
   } else if (!unimodal) {
     message("Selecting HVGs...\n")
-    model <- modelGeneVar(exprsMatRNA)
-    hvg_genes <- getTopHVGs(model, n=0.05*nrow(exprsMatRNA))
+    model <- scran::modelGeneVar(exprsMatRNA)
+    hvg_genes <- scran::getTopHVGs(model, n=0.05*nrow(exprsMatRNA))
     hvg_data <- exprsMatRNA[hvg_genes, ]
     message("Reducing dimensions...\n")
     reducedDims <- getEncodingMultiModal(list(hvg_data, exprsMatOther), hiddenDims = hiddenDimsMultimodal, encodedDim = encodingDim1, epochs=nEpochs, batchSize=32)
@@ -56,34 +56,34 @@ runCLUEY <-  function(exprsMatRNA, exprsMatOther=NULL, reference, corMethod = "s
 
 
   dist_matrix <- as.matrix(distances::distances(reducedDims))
-  affinity_matrix <- affinityMatrix(dist_matrix, K = 30, sigma = 0.4)
+  affinity_matrix <- SNFtool::affinityMatrix(dist_matrix, K = 30, sigma = 0.4)
 
-  k_annotations <- list()
+  k_predictions <- list()
   k_clusters <- list()
   message("Estimating initial k...\n")
   for(k in 2:kLimit){
     cluster_res <- spectralClustering(as.matrix(affinity_matrix),  k)
     clusters <- cluster_res$label
     k_clusters[[length(k_clusters) + 1]] <- clusters
-    k_annotations[[length(k_annotations) + 1]] <- annotateClusters(exprsMatRNA, clusters, corMethod = corMethod, reference = reference, propGenes = propGenes)
+    k_predictions[[length(k_predictions) + 1]] <- annotateClusters(exprsMatRNA, clusters, corMethod = corMethod, knowledgeBase = knowledgeBase, propGenes = propGenes)
 
   }
-  names(k_annotations) <- 2:kLimit
+  names(k_predictions) <- 2:kLimit
   names(k_clusters) <- 2:kLimit
-  optimal_annotations <- findOptimalK(k_annotations, k_clusters) # Pass in dis matrix
+  optimal_predictions <- findOptimalK(k_predictions, k_clusters) # Pass in dis matrix
 
   cluey_df <- data.frame(cell_id = colnames(exprsMatRNA),
-                         spectral_cluster = optimal_annotations$clusters,
-                         annotation = gsub("[.]", " ", optimal_annotations[[1]]$annotation[optimal_annotations$clusters]),
-                         correlation = optimal_annotations[[1]]$correlation[optimal_annotations$clusters])
+                         spectral_cluster = optimal_predictions$clusters,
+                         annotation = gsub("[.]", " ", optimal_predictions[[1]]$annotation[optimal_predictions$clusters]),
+                         correlation = optimal_predictions[[1]]$correlation[optimal_predictions$clusters])
 
   cluey_df$cluster <- as.integer(factor(cluey_df$annotation))
   cluey_df <- cluey_df[match(colnames(exprsMatRNA), cluey_df$cell_id),]
   max_cluster <- max(cluey_df$cluster)
-  score <- FisherZInv(mean(FisherZ(unique(cluey_df$correlation))))
-  pvalue <- pnorm(mean(FisherZ(unique(cluey_df$correlation))), lower.tail = F)
+  score <- DescTools::FisherZInv(mean(DescTools::FisherZ(unique(cluey_df$correlation))))
+  pvalue <- pnorm(mean(DescTools::FisherZ(unique(cluey_df$correlation))), lower.tail = F)
 
-  current_result <- list(optimal_K = max_cluster, score = round(optimal_annotations$score, digits = 2), annotations = cluey_df, pvalue = round(pvalue, digits = 2))
+  current_result <- list(optimal_K = max_cluster, score = round(optimal_predictions$score, digits = 2), predictions = cluey_df, pvalue = round(pvalue, digits = 2))
   tmp_current_result <- current_result
   results <- list()
 
@@ -94,7 +94,7 @@ runCLUEY <-  function(exprsMatRNA, exprsMatOther=NULL, reference, corMethod = "s
     cells <- cluey_df$cell_id[idx]
     if(length(cells) > minCells){
 
-      tmp_current_result[["annotations"]] <- tmp_current_result$annotations[tmp_current_result$annotations$cell_id %in% cells,]
+      tmp_current_result[["predictions"]] <- tmp_current_result$predictions[tmp_current_result$predictions$cell_id %in% cells,]
 
       if (!unimodal) {
         tmp_exprsMatOther <- exprsMatOther[, cells]
@@ -103,7 +103,7 @@ runCLUEY <-  function(exprsMatRNA, exprsMatOther=NULL, reference, corMethod = "s
       }
 
       tmp_results <- reRunCLUEY(exprsMatRNA= exprsMatRNA[, cells], exprsMatOther=tmp_exprsMatOther, reducedDims = reducedDims[cells,],
-                                reference = reference, corMethod = corMethod, kLimit = subK,
+                                knowledgeBase = knowledgeBase, corMethod = corMethod, kLimit = subK,
                                 previousResult = tmp_current_result, propGenes = propGenes, recursive = recursive, minCells = minCells,
                                 encodingDim2=encodingDim2, unimodal=unimodal, hiddenDimsMultimodal=hiddenDimsMultimodal, nEpochs=nEpochs)
 
@@ -114,22 +114,22 @@ runCLUEY <-  function(exprsMatRNA, exprsMatOther=NULL, reference, corMethod = "s
 
   if(length(results) > 0){
 
-    cluey_df <- current_result$annotations
+    cluey_df <- current_result$predictions
     for(i in 1:length(results)){
       result <- results[[i]]
       if(!is.null(result)){
-        cells <- result$annotations$cell_id
+        cells <- result$predictions$cell_id
         cluey_df <- cluey_df[!(cluey_df$cell_id %in% cells),]
-        cluey_df <- rbind(cluey_df, results[[i]]$annotations)
+        cluey_df <- rbind(cluey_df, results[[i]]$predictions)
       }
 
     }
     cluey_df$cluster <- as.integer(factor(cluey_df$annotation))
     cluey_df <- cluey_df[match(colnames(exprsMatRNA), cluey_df$cell_id),]
 
-    score <- FisherZInv(mean(FisherZ(unique(cluey_df$correlation))))
-    pvalue <- pnorm(mean(FisherZ(unique(cluey_df$correlation))), lower.tail = F)
-    return(list(optimal_K = length(unique(cluey_df$annotation)), annotations = cluey_df, score = round(score, digits = 2), pvalue = round(pvalue, digits = 2)))
+    score <- DescTools::FisherZInv(mean(DescTools::FisherZ(unique(cluey_df$correlation))))
+    pvalue <- pnorm(mean(DescTools::FisherZ(unique(cluey_df$correlation))), lower.tail = F)
+    return(list(optimal_K = length(unique(cluey_df$annotation)), predictions = cluey_df, score = round(score, digits = 2), pvalue = round(pvalue, digits = 2)))
 
   }
   message("Returning results...")

@@ -1,7 +1,7 @@
 ###################################################################
 # Function to extract muli-modal latent space for clustering
 ###################################################################
-
+#' @importFrom magrittr %>%
 getEncodingMultiModal <- function(datasetList, learningRate = 0.001,
                                   hiddenDims = 50, encodedDim = 10,
                                   epochs = 50, batchSize = 32,
@@ -20,7 +20,7 @@ getEncodingMultiModal <- function(datasetList, learningRate = 0.001,
   input_dim = lapply(datasetList_t, ncol)
   input_dat = mapply(function(datm, dim) {
 
-    list(layer_input(shape = ncol(datm)), dim)
+    list(keras::layer_input(shape = ncol(datm)), dim)
 
   }, datm = datasetList_t, dim = hiddenDims, SIMPLIFY = F)
 
@@ -34,15 +34,15 @@ getEncodingMultiModal <- function(datasetList, learningRate = 0.001,
   })
 
   # Concatenate encoders
-  joint_modals = layer_concatenate(each_modal_encoder)
+  joint_modals = keras::layer_concatenate(each_modal_encoder)
 
   if(length(datasetList) > 1){
 
     joint_latent_space = joint_modals %>%
-      layer_dense(units = encodedDim) %>%
-      layer_activation_leaky_relu() %>%
-      layer_batch_normalization() %>%
-      layer_activation_leaky_relu()
+      keras::layer_dense(units = encodedDim) %>%
+      keras::layer_activation_leaky_relu() %>%
+      keras::layer_batch_normalization() %>%
+      keras::layer_activation_leaky_relu()
 
   }else{
 
@@ -62,13 +62,13 @@ getEncodingMultiModal <- function(datasetList, learningRate = 0.001,
 
   })
 
-  autoencoder_multimodal_model <- keras_model(
+  autoencoder_multimodal_model <- keras::keras_model(
     inputs = lapply(input_dat,function(x) x[[1]]),
     outputs = each_modal_decoder
   )
 
-  ADAM = optimizer_adam(learning_rate = learningRate)
-  autoencoder_multimodal_model %>% compile(
+  ADAM = keras::optimizer_adam(learning_rate = learningRate)
+  autoencoder_multimodal_model %>% keras::compile(
     loss = 'mean_squared_error',
     optimizer = ADAM
   )
@@ -85,7 +85,7 @@ getEncodingMultiModal <- function(datasetList, learningRate = 0.001,
 
 
 
-  latent_space_model = keras_model(
+  latent_space_model = keras::keras_model(
     inputs = lapply(input_dat,function(x) x[[1]]),
     outputs = joint_latent_space  # Joint latent space
   )

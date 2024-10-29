@@ -58,7 +58,7 @@ data(exampleData)
 
 # Run CLUEY
 # If your logcounts matrix is in dgCMatrix format, then you'll need to convert it to a matrix using `as.matrix()`
-clustering_results <- runCLUEY(exprsMatRNA=as.matrix(logcounts(exampleData)), knowledgeBase=mcaFACS, kLimit=10, encodingDim1=10, encodingDim2=5)
+clustering_results <- runCLUEY(exprsMatRNA=as.matrix(logcounts(exampleData)), knowledgeBase=mcaFACS, kLimit=10)
 ```
 
 ## Viewing results

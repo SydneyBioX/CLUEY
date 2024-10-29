@@ -21,13 +21,13 @@
 #' @param hiddenDimsMultimodal Dimension of the hidden layer for multi-modal autoencoder. Ignored if `exprsMatOther` is NULL. Default is 50.
 #' @param nEpochs Number of epochs when training the autoencoder.
 #'
-#' @return A list containing the optimal number of clusters `optimal_k`,
-#' final clustering score `score`, and corresponding p-value `pvalue1`,
-#' and a dataframe containing statistics associated with optimal clustering:
+#' @return A list containing the optimal number of clusters `optimal_k` and
+#' final clustering score `score`. Cluster assignments and correlation scores
+#' for each cluster can be in `predictions`.
 #' @export
 #'
 runCLUEY <-  function(exprsMatRNA, exprsMatOther=NULL, knowledgeBase, corMethod = "spearman", propGenes=0.25, kLimit=20, subK=3, minCells=20,
-                      recursive=TRUE, encodingDim1=50, encodingDim2=10, hiddenDimsMultimodal=50, nEpochs=50){
+                      recursive=TRUE, encodingDim1=50, encodingDim2=10, hiddenDimsMultimodal=50, nEpochs=30){
   unimodal <- TRUE
   stopifnot(minCells >= 2*subK)
   rownames(exprsMatRNA) <- toupper(rownames(exprsMatRNA))

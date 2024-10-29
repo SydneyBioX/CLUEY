@@ -63,18 +63,11 @@ data(exampleData)
 
 # Run CLUEY
 # If your logcounts matrix is in dgCMatrix format, then you'll need to convert it to a matrix using `as.matrix()`
-clustering_results <- runCLUEY(exprsMatRNA=as.matrix(logcounts(exampleData)), knowledgeBase=mcaFACS, kLimit=10, encodingDim1=10, encodingDim2=5)
-#> 25/25 - 0s - 120ms/epoch - 5ms/step
-#> 13/13 - 0s - 91ms/epoch - 7ms/step
-#> 5/5 - 0s - 85ms/epoch - 17ms/step
-#> 3/3 - 0s - 86ms/epoch - 29ms/step
-#> 2/2 - 0s - 99ms/epoch - 49ms/step
-#> 2/2 - 0s - 103ms/epoch - 52ms/step
-#> 9/9 - 0s - 105ms/epoch - 12ms/step
-#> 26/26 - 0s - 200ms/epoch - 8ms/step
-#> 13/13 - 0s - 139ms/epoch - 11ms/step
-#> 13/13 - 0s - 109ms/epoch - 8ms/step
-#> 13/13 - 0s - 123ms/epoch - 9ms/step
+clustering_results <- runCLUEY(exprsMatRNA=as.matrix(logcounts(exampleData)), knowledgeBase=mcaFACS, kLimit=10)
+#> 25/25 - 0s - 148ms/epoch - 6ms/step
+#> 13/13 - 0s - 94ms/epoch - 7ms/step
+#> 25/25 - 0s - 108ms/epoch - 4ms/step
+#> 13/13 - 0s - 77ms/epoch - 6ms/step
 ```
 
 ## Viewing results

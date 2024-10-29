@@ -17,7 +17,7 @@ runCLUEY(
   encodingDim1 = 50,
   encodingDim2 = 10,
   hiddenDimsMultimodal = 50,
-  nEpochs = 50
+  nEpochs = 30
 )
 }
 \arguments{
@@ -52,9 +52,9 @@ profiles between each cluster and knowledgeBase cell-type. Default is 0.25.}
 \item{nEpochs}{Number of epochs when training the autoencoder.}
 }
 \value{
-A list containing the optimal number of clusters `optimal_k`,
-final clustering score `score`, and corresponding p-value `pvalue1`,
-and a dataframe containing statistics associated with optimal clustering:
+A list containing the optimal number of clusters `optimal_k` and
+final clustering score `score`. Cluster assignments and correlation scores
+for each cluster can be in `predictions`.
 }
 \description{
 Perform cluster estimation of single or multi-modal single-cell data

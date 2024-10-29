@@ -21,9 +21,8 @@ knitr::opts_chunk$set(
 This is an R package for estimating the number of clusters in uni and multi-modal single-cell data. CLUEY uses cell-type identity markers to guide the clustering process and performs recursive clusters to ensure 
 that sub-populations are captured.
 
-<center>
-  <img src="man/figures/CLUEY_figure.png" width="50%">
-</center>
+| ![](man/figures/CLUEY_figure.png) |
+|:--------------------------------------------------:|
 
 ## Dependencies
 CLUEY requires both keras and tensorflow, please have both installed. You can follow the instructions provided at this [link](https://tensorflow.rstudio.com/install/).

@@ -11,9 +11,8 @@ multi-modal single-cell data. CLUEY uses cell-type identity markers to
 guide the clustering process and performs recursive clusters to ensure
 that sub-populations are captured.
 
-<center>
-<img src="man/figures/CLUEY_figure.png" width="50%">
-</center>
+| ![](man/figures/CLUEY_figure.png) |
+|:---------------------------------:|
 
 ## Dependencies
 
@@ -66,16 +65,16 @@ data(exampleData)
 # If your logcounts matrix is in dgCMatrix format, then you'll need to convert it to a matrix using `as.matrix()`
 clustering_results <- runCLUEY(exprsMatRNA=as.matrix(logcounts(exampleData)), knowledgeBase=mcaFACS, kLimit=10, encodingDim1=10, encodingDim2=5)
 #> 25/25 - 0s - 120ms/epoch - 5ms/step
-#> 13/13 - 0s - 94ms/epoch - 7ms/step
-#> 5/5 - 0s - 95ms/epoch - 19ms/step
-#> 3/3 - 0s - 89ms/epoch - 30ms/step
-#> 2/2 - 0s - 77ms/epoch - 39ms/step
-#> 9/9 - 0s - 91ms/epoch - 10ms/step
-#> 25/25 - 0s - 159ms/epoch - 6ms/step
-#> 11/11 - 0s - 104ms/epoch - 9ms/step
-#> 15/15 - 0s - 114ms/epoch - 8ms/step
-#> 13/13 - 0s - 126ms/epoch - 10ms/step
-#> 13/13 - 0s - 158ms/epoch - 12ms/step
+#> 13/13 - 0s - 91ms/epoch - 7ms/step
+#> 5/5 - 0s - 85ms/epoch - 17ms/step
+#> 3/3 - 0s - 86ms/epoch - 29ms/step
+#> 2/2 - 0s - 99ms/epoch - 49ms/step
+#> 2/2 - 0s - 103ms/epoch - 52ms/step
+#> 9/9 - 0s - 105ms/epoch - 12ms/step
+#> 26/26 - 0s - 200ms/epoch - 8ms/step
+#> 13/13 - 0s - 139ms/epoch - 11ms/step
+#> 13/13 - 0s - 109ms/epoch - 8ms/step
+#> 13/13 - 0s - 123ms/epoch - 9ms/step
 ```
 
 ## Viewing results

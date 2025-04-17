@@ -1,7 +1,8 @@
 ###################################################################
 # Function for generating pseudobulk profiles
 ###################################################################
-generatePseudobulk <- function(exprsMat, clusters){
+
+generate_pseudobulk <- function(exprs_mtx, clusters){
 
   cluster_labels <- unique(clusters)
   num_clusters <- length(cluster_labels)
@@ -9,11 +10,11 @@ generatePseudobulk <- function(exprsMat, clusters){
 
   for(i in 1:num_clusters){
 
-    profile <- exprsMat[, which(clusters == cluster_labels[i])]
+    profile <- exprs_mtx[, which(clusters == cluster_labels[i])]
 
     if(!is.null(ncol(profile))){
 
-      pseudobulk_profiles[[i]] <- rowMeans(exprsMat[, which(clusters == cluster_labels[i])])
+      pseudobulk_profiles[[i]] <- rowMeans(exprs_mtx[, which(clusters == cluster_labels[i])])
 
     }else{
 
@@ -25,5 +26,6 @@ generatePseudobulk <- function(exprsMat, clusters){
   }
 
   names(pseudobulk_profiles) <- cluster_labels
-  pseudobulk_profiles
+  return(pseudobulk_profiles)
+
 }

@@ -62,12 +62,12 @@ data(exampleData)
 
 # Run CLUEY
 # If your logcounts matrix is in dgCMatrix format, then you'll need to convert it to a matrix using `as.matrix()`
-clustering_results <- run_CLUEY(rna=as.matrix(logcounts(exampleData)), knowledgebase=mcaFACS, k_limit=10)
-#> 50/50 - 0s - 73ms/epoch - 1ms/step
-#> 6/6 - 0s - 41ms/epoch - 7ms/step
-#> 7/7 - 0s - 45ms/epoch - 6ms/step
-#> 7/7 - 0s - 50ms/epoch - 7ms/step
-#> 6/6 - 0s - 43ms/epoch - 7ms/step
+clustering_results <- run_CLUEY(rna=as.matrix(logcounts(exampleData)), clus_method="kmeans", knowledgebase=mcaFACS, k_limit=10)
+#> 50/50 - 0s - 100ms/epoch - 2ms/step
+#> 3/3 - 0s - 45ms/epoch - 15ms/step
+#> 4/4 - 0s - 44ms/epoch - 11ms/step
+#> 17/17 - 0s - 51ms/epoch - 3ms/step
+#> 3/3 - 0s - 45ms/epoch - 15ms/step
 ```
 
 ## Viewing results
@@ -80,7 +80,7 @@ set.seed(3435)
 
 # View the optimal number of clusters predicted by CLUEY
 clustering_results$optimal_K
-#> [1] 5
+#> [1] 7
 
 # We can store the results in the metadata of our SingleCellExperiment object. 
 colData(exampleData) <- cbind(colData(exampleData), clustering_results$predictions)

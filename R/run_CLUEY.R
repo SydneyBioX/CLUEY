@@ -88,7 +88,7 @@ run_CLUEY <-  function(rna, modalities=NULL, knowledgebase, clus_method="spectra
 
     }else{
 
-      cluster_res <- stats::kmeans(umap, centers=k, nstart=5)
+      cluster_res <- stats::kmeans(as.matrix(affinity_matrix), centers=k, nstart=5)
       clusters <- cluster_res$cluster
 
     }

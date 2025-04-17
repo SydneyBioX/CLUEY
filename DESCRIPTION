@@ -1,7 +1,7 @@
 Package: CLUEY
 Type: Package
 Title: CLUEY enables knowledge-guided clustering and cell type detection from single-cell omics data
-Version: 0.1.0
+Version: 1.1.0
 Author: person("Daniel", "Kim", email = "daniel.kim2@sydney.edu.au",
         role = c("aut", "cre"),
         comment=c(ORCID="0000-0002-8405-6719"))

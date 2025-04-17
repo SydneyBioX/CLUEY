@@ -43,7 +43,7 @@ rerun_CLUEY <-  function(rna, modalities=modalities, reduced_dims, knowledgebase
 
       }else{
 
-        cluster_res <- stats::kmeans(umap, centers=k, nstart=5)
+        cluster_res <- stats::kmeans(as.matrix(affinity_matrix), centers=k, nstart=5)
         clusters <- cluster_res$cluster
 
       }

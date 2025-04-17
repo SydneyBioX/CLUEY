@@ -1,4 +1,4 @@
-#' runCLUEY
+#' run_CLUEY
 #'
 #' @description
 #' Perform cluster estimation of single or multi-modal single-cell data
@@ -72,7 +72,7 @@ run_CLUEY <-  function(rna, modalities=NULL, knowledgebase, clus_method="spectra
   }
 
   dist_matrix <- as.matrix(distances::distances(reduced_dims))
-  affinity_matrix <- SNFtools::affinityMatrix(dist_matrix, K = 30, sigma = 0.4)
+  affinity_matrix <- SNFtool::affinityMatrix(dist_matrix, K = 30, sigma = 0.4)
 
   k_annotations <- list()
   k_clusters <- list()
@@ -111,7 +111,7 @@ run_CLUEY <-  function(rna, modalities=NULL, knowledgebase, clus_method="spectra
   cluey_df <- cluey_df[match(colnames(rna), cluey_df$cell_id),]
   max_cluster <- max(cluey_df$cluster)
 
-  current_result <- list(optimal_K = max_cluster, annotations = cluey_df)
+  current_result <- list(optimal_K = max_cluster, predictions = cluey_df)
   tmp_current_result <- current_result
   results <- list()
 
@@ -124,7 +124,7 @@ run_CLUEY <-  function(rna, modalities=NULL, knowledgebase, clus_method="spectra
 
     if(length(cells) > min_cells){
 
-      tmp_current_result[["annotations"]] <- tmp_current_result$annotations[tmp_current_result$annotations$cell_id %in% cells,]
+      tmp_current_result[["predictions"]] <- tmp_current_result$predictions[tmp_current_result$predictions$cell_id %in% cells,]
 
       if (!unimodal) {
 
@@ -150,7 +150,7 @@ run_CLUEY <-  function(rna, modalities=NULL, knowledgebase, clus_method="spectra
 
   if(length(results) > 0){
 
-    cluey_df <- current_result$annotations
+    cluey_df <- current_result$predictions
 
     for(i in 1:length(results)){
 
@@ -158,9 +158,9 @@ run_CLUEY <-  function(rna, modalities=NULL, knowledgebase, clus_method="spectra
 
       if(!is.null(result)){
 
-        cells <- result$annotations$cell_id
+        cells <- result$predictions$cell_id
         cluey_df <- cluey_df[!(cluey_df$cell_id %in% cells),]
-        cluey_df <- rbind(cluey_df, results[[i]]$annotations)
+        cluey_df <- rbind(cluey_df, results[[i]]$predictions)
 
       }
 
@@ -171,7 +171,7 @@ run_CLUEY <-  function(rna, modalities=NULL, knowledgebase, clus_method="spectra
 
     # score <- FisherZInv(mean(FisherZ(unique(cluey_df$correlation))))
     # pvalue <- pnorm(mean(FisherZ(unique(cluey_df$correlation))), lower.tail = F)
-    return(list(optimal_K = length(unique(cluey_df$annotation)), annotations = cluey_df))
+    return(list(optimal_K = length(unique(cluey_df$annotation)), predictions = cluey_df))
 
   }
 

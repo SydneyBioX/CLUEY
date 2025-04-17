@@ -32,10 +32,10 @@ install_github("SydneyBioX/CLUEY")
 ## Generating knowledge base
 
 You can generate your own knowledge base using the
-`generateKnowledgeBase` function like below:
+`generate_knowledgebase` function like below:
 
 ``` r
-knowledgeBase <- generateKnowledgeBase(exprsMat=logcounts(sce), celltypes=sce$cellType)
+knowledgeBase <- generate_knowledgebase(reference=logcounts(sce), celltypes=sce$cellType)
 ```
 
 ## Cluster data
@@ -44,7 +44,7 @@ In this example, we will upload an example knowledge base generated from
 the [Mouse Cell Atlas
 (FACS)](https://www.nature.com/articles/s41586-020-2496-1) and cluster
 an example query dataset which was subsampled from [Zilionis et
-al.](https://pubmed.ncbi.nlm.nih.gov/30979687/) using the `runCLUEY`
+al.](https://pubmed.ncbi.nlm.nih.gov/30979687/) using the `run_CLUEY`
 function.
 
 ``` r
@@ -52,7 +52,6 @@ library(CLUEY)
 library(scater)
 library(ggplot2)
 library(gridExtra)
-
 set.seed(3435)
 
 # Load example knowledge base
@@ -63,11 +62,12 @@ data(exampleData)
 
 # Run CLUEY
 # If your logcounts matrix is in dgCMatrix format, then you'll need to convert it to a matrix using `as.matrix()`
-clustering_results <- runCLUEY(exprsMatRNA=as.matrix(logcounts(exampleData)), knowledgeBase=mcaFACS, kLimit=10)
-#> 25/25 - 0s - 148ms/epoch - 6ms/step
-#> 13/13 - 0s - 94ms/epoch - 7ms/step
-#> 25/25 - 0s - 108ms/epoch - 4ms/step
-#> 13/13 - 0s - 77ms/epoch - 6ms/step
+clustering_results <- run_CLUEY(rna=as.matrix(logcounts(exampleData)), knowledgebase=mcaFACS, k_limit=10)
+#> 50/50 - 0s - 73ms/epoch - 1ms/step
+#> 6/6 - 0s - 41ms/epoch - 7ms/step
+#> 7/7 - 0s - 45ms/epoch - 6ms/step
+#> 7/7 - 0s - 50ms/epoch - 7ms/step
+#> 6/6 - 0s - 43ms/epoch - 7ms/step
 ```
 
 ## Viewing results

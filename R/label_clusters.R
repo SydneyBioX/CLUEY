@@ -2,7 +2,7 @@
 # Function for labeling cluster to most similar cell-type in knowledge base
 ############################################################################
 
-label_clusters <- function(exprs_mtx, clusters, cor_method, reference, prop_genes){
+label_clusters <- function(exprs_mtx, clusters, cor_method, knowledgebase, prop_genes){
 
   # generate pseudo-bulk for query according to clusters
   pseudobulk_profiles <- generate_pseudobulk(exprs_mtx, clusters)
@@ -11,21 +11,21 @@ label_clusters <- function(exprs_mtx, clusters, cor_method, reference, prop_gene
 
   for(x in 1:length(pseudobulk_profiles)){
 
-    tmp_scores <- vector("numeric", length = length(reference))
+    tmp_scores <- vector("numeric", length = length(knowledgebase))
     current_cluster <- pseudobulk_profiles[[x]]
     cluster_ID <- names(pseudobulk_profiles)[[x]]
 
-    for(y in 1:length(reference)){
+    for(y in 1:length(knowledgebase)){
 
-      nGenes <- length(reference[[y]])*prop_genes
-      common_genes <- names(reference[[y]])[names(reference[[y]]) %in% names(current_cluster)][1:nGenes] # subset for top genes
+      nGenes <- length(knowledgebase[[y]])*prop_genes
+      common_genes <- names(knowledgebase[[y]])[names(knowledgebase[[y]]) %in% names(current_cluster)][1:nGenes] # subset for top genes
       weight <- length(common_genes)/nGenes
 
       corr <- .Machine$double.xmin
 
       if(length(common_genes > 1)){
 
-        corr <- cor(current_cluster[common_genes], reference[[y]][common_genes], method = cor_method)
+        corr <- cor(current_cluster[common_genes], knowledgebase[[y]][common_genes], method = cor_method)
 
         if(is.na(corr)){
 
@@ -43,7 +43,7 @@ label_clusters <- function(exprs_mtx, clusters, cor_method, reference, prop_gene
 
     }
 
-    names(tmp_scores) <- names(reference)
+    names(tmp_scores) <- names(knowledgebase)
     k_list[[x]] <- tmp_scores
 
   }

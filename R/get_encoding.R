@@ -21,7 +21,7 @@ get_encoding <- function(dataset_list, learning_rate = 0.001,
   input_dim <-  lapply(dataset_list_t, ncol)
   input_dat <-  mapply(function(datm, dim) {
 
-    list(layer_input(shape = ncol(datm)))
+    list(keras::layer_input(shape = ncol(datm)))
 
   }, datm = dataset_list_t, SIMPLIFY = F)
 
@@ -61,7 +61,7 @@ get_encoding <- function(dataset_list, learning_rate = 0.001,
 
   })
 
-  autoencoder_multimodal_model <- keras_model(
+  autoencoder_multimodal_model <- keras::keras_model(
     inputs = lapply(input_dat, function(x) x[[1]]),
     outputs = each_modal_decoder
   )

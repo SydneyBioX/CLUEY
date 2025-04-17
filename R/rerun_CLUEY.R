@@ -65,7 +65,7 @@ rerun_CLUEY <-  function(rna, modalities=modalities, reduced_dims, knowledgebase
     cluey_df$cluster <- as.integer(factor(cluey_df$annotation))
     max_cluster <- max(cluey_df$cluster)
 
-    current_result <- list(optimal_K = max_cluster, annotations=cluey_df)
+    current_result <- list(optimal_K = max_cluster, predictions=cluey_df)
     tmp_current_result <- current_result
     results <- list()
 
@@ -80,7 +80,7 @@ rerun_CLUEY <-  function(rna, modalities=modalities, reduced_dims, knowledgebase
 
           if(length(cells) > min_cells){
 
-            tmp_current_result[["annotations"]] <- tmp_current_result$annotations[tmp_current_result$annotations$cell_id %in% cells,]
+            tmp_current_result[["predictions"]] <- tmp_current_result$predictions[tmp_current_result$predictions$cell_id %in% cells,]
 
             if (!unimodal) {
 
@@ -107,7 +107,7 @@ rerun_CLUEY <-  function(rna, modalities=modalities, reduced_dims, knowledgebase
 
       if(length(results) > 0){
 
-        cluey_df <- current_result$annotations
+        cluey_df <- current_result$predictions
 
         for(i in 1:length(results)){
 
@@ -115,9 +115,9 @@ rerun_CLUEY <-  function(rna, modalities=modalities, reduced_dims, knowledgebase
 
           if(!is.null(result)){
 
-            cells <- result$annotations$cell_id
+            cells <- result$predictions$cell_id
             cluey_df <- cluey_df[!(cluey_df$cell_id %in% cells),]
-            cluey_df <- rbind(cluey_df, results[[i]]$annotations)
+            cluey_df <- rbind(cluey_df, results[[i]]$predictions)
 
           }
 
@@ -126,7 +126,7 @@ rerun_CLUEY <-  function(rna, modalities=modalities, reduced_dims, knowledgebase
         cluey_df$cluster <- as.integer(factor(cluey_df$annotation))
         cluey_df <- cluey_df[match(colnames(rna), cluey_df$cell_id),]
 
-        return(list(optimal_K = length(unique(cluey_df$annotation)), annotations = cluey_df))
+        return(list(optimal_K = length(unique(cluey_df$annotation)), predictions = cluey_df))
 
       }
 

@@ -63,11 +63,11 @@ data(exampleData)
 # Run CLUEY
 # If your logcounts matrix is in dgCMatrix format, then you'll need to convert it to a matrix using `as.matrix()`
 clustering_results <- run_CLUEY(rna=as.matrix(logcounts(exampleData)), knowledgebase=mcaFACS, k_limit=10)
-#> 50/50 - 0s - 88ms/epoch - 2ms/step
-#> 5/5 - 0s - 41ms/epoch - 8ms/step
-#> 8/8 - 0s - 41ms/epoch - 5ms/step
-#> 8/8 - 0s - 44ms/epoch - 6ms/step
-#> 6/6 - 0s - 44ms/epoch - 7ms/step
+#> 50/50 - 0s - 93ms/epoch - 2ms/step
+#> 5/5 - 0s - 42ms/epoch - 8ms/step
+#> 6/6 - 0s - 43ms/epoch - 7ms/step
+#> 10/10 - 0s - 44ms/epoch - 4ms/step
+#> 6/6 - 0s - 41ms/epoch - 7ms/step
 ```
 
 ## View results
@@ -137,12 +137,12 @@ data(multiomicExampleData)
 # Run CLUEY
 # If your logcounts matrix is in dgCMatrix format, then you'll need to convert it to a matrix using `as.matrix()`
 clustering_results <- run_CLUEY(rna=as.matrix(multiomicExampleData$counts), modalities=as.matrix(multiomicExampleData$other), knowledgebase=hca10X, k_limit=10)
-#> 407/407 - 0s - 462ms/epoch - 1ms/step
-#> 74/74 - 1s - 579ms/epoch - 8ms/step
-#> 30/30 - 0s - 197ms/epoch - 7ms/step
-#> 40/40 - 0s - 269ms/epoch - 7ms/step
-#> 16/16 - 0s - 277ms/epoch - 17ms/step
-#> 46/46 - 0s - 336ms/epoch - 7ms/step
+#> 407/407 - 0s - 460ms/epoch - 1ms/step
+#> 75/75 - 1s - 600ms/epoch - 8ms/step
+#> 28/28 - 0s - 195ms/epoch - 7ms/step
+#> 40/40 - 0s - 282ms/epoch - 7ms/step
+#> 16/16 - 0s - 292ms/epoch - 18ms/step
+#> 47/47 - 0s - 333ms/epoch - 7ms/step
 ```
 
 ## View results
@@ -178,9 +178,3 @@ ggplot(umap, aes(x=UMAP1, y=UMAP2, color=correlation)) + geom_point() + theme_cl
 ```
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
-
-``` r
-
-# Only keep clusters with correlation scores > 0.65
-#new_data <- exampleData[,exampleData$correlation > 0.65]
-```

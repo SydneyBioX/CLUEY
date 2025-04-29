@@ -132,7 +132,4 @@ ggplot(umap, aes(x=UMAP1, y=UMAP2, color=cluster)) + geom_point() + theme_classi
 ## View correlation scores
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
 ggplot(umap, aes(x=UMAP1, y=UMAP2, color=correlation)) + geom_point() + theme_classic()
-
-# Only keep clusters with correlation scores > 0.65
-#new_data <- exampleData[,exampleData$correlation > 0.65]
 ```

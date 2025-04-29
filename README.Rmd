@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 This is an R package for estimating the number of clusters in uni and multi-modal single-cell data. CLUEY uses cell-type identity markers to guide the clustering process and performs recursive clusters to ensure 
 that sub-populations are captured.
 
-| ![](man/figures/CLUEY_figure.png) |
+| ![](man/figures/CLUEY_figure.jpg) |
 |:--------------------------------------------------:|
 
 ## Dependencies
@@ -57,10 +57,10 @@ data(exampleData)
 
 # Run CLUEY
 # If your logcounts matrix is in dgCMatrix format, then you'll need to convert it to a matrix using `as.matrix()`
-clustering_results <- run_CLUEY(rna=as.matrix(logcounts(exampleData)), clus_method="kmeans", knowledgebase=mcaFACS, k_limit=10)
+clustering_results <- run_CLUEY(rna=as.matrix(logcounts(exampleData)), knowledgebase=mcaFACS, k_limit=10)
 ```
 
-## Viewing results
+## View results
 We can now view the results of the clustering performed by CLUEY. CLUEY predicts there to be 5 clusters in the data.
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
 set.seed(3435)
@@ -81,4 +81,58 @@ umap$correlation <- exampleData$correlation
 ggplot(umap, aes(x=UMAP1, y=UMAP2, color=cluster)) + geom_point() + theme_classic()
 ```
 
+## View correlation scores
+We can also view the correlation scores associated with the predicted clusters.
+```{r}
+ggplot(umap, aes(x=UMAP1, y=UMAP2, color=correlation)) + geom_point() + theme_classic()
 
+# Only keep clusters with correlation scores > 0.65
+#new_data <- exampleData[,exampleData$correlation > 0.65]
+```
+
+# Run CLUEY on multiomic data
+
+## Cluster data
+In this example, we will upload an example knowledge base generated from the [Human Cell Atlas (10X)](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02210-0) and cluster an example multiomic query dataset from [Swanson et al.](https://pubmed.ncbi.nlm.nih.gov/33835024/) using the `run_CLUEY` function, like previously. Note that we do not require a multiomic reference to predict clusters in a multiomic query dataset.
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+set.seed(3435)
+# Load example knowledge base
+data(hca10X)
+
+# Load example query data
+data(multiomicExampleData)
+
+# Run CLUEY
+# If your logcounts matrix is in dgCMatrix format, then you'll need to convert it to a matrix using `as.matrix()`
+clustering_results <- run_CLUEY(rna=as.matrix(multiomicExampleData$counts), modalities=as.matrix(multiomicExampleData$other), knowledgebase=hca10X, k_limit=10)
+```
+
+## View results
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+set.seed(3435)
+
+# View the optimal number of clusters predicted by CLUEY
+clustering_results$optimal_K
+
+sce <- SingleCellExperiment(assays = list(logcounts = multiomicExampleData$counts), colData = multiomicExampleData$celltypes)
+
+# We can store the results in the metadata of our SingleCellExperiment object. 
+colData(sce) <- cbind(colData(sce), clustering_results$predictions)
+
+# Run UMAP to visualise clusters
+sce <- runPCA(sce)
+sce <- runUMAP(sce)
+umap <- data.frame(reducedDim(sce, "UMAP"))
+umap$cluster <- as.factor(sce$cluster)
+umap$correlation <- sce$correlation
+
+ggplot(umap, aes(x=UMAP1, y=UMAP2, color=cluster)) + geom_point() + theme_classic()
+```
+
+## View correlation scores
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(umap, aes(x=UMAP1, y=UMAP2, color=correlation)) + geom_point() + theme_classic()
+
+# Only keep clusters with correlation scores > 0.65
+#new_data <- exampleData[,exampleData$correlation > 0.65]
+```

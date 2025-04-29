@@ -8,6 +8,7 @@
 #' @param modalities A list of additional modalities, such as ATAC-seq or CITE-seq,
 #' where rows are the features and columns are cells.
 #' @param knowledgebase knowledgebase generated from the function `generateKnowledgeBase`.
+#' @param clus_method Clustering method used. Default is Spectral clustering. Other option is K-means clustering.
 #' @param cor_method Correlation method used when determining the most similar cell-types
 #' for each cluster. Options are "Spearman" or "Pearson". Default is Spearman correlation.
 #' @param prop_genes Proportion of genes to use when calculating the correlation of the expression

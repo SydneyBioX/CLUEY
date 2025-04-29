@@ -27,6 +27,8 @@ where rows are the features and columns are cells.}
 
 \item{knowledgebase}{knowledgebase generated from the function `generateKnowledgeBase`.}
 
+\item{clus_method}{Clustering method used. Default is Spectral clustering. Other option is K-means clustering.}
+
 \item{cor_method}{Correlation method used when determining the most similar cell-types
 for each cluster. Options are "Spearman" or "Pearson". Default is Spearman correlation.}
 
